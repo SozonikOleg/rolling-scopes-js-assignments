@@ -85,7 +85,7 @@ function extractNameFromTemplate(value) {
  *   'cat'       => 'c'
  */
 function getFirstChar(value) {
-    return value.charAt(0);
+    return value[0];
 }
 
 /**
@@ -115,10 +115,7 @@ function removeLeadingAndTrailingWhitespaces(value) {
  *   'cat', 3 => 'catcatcat'
  */
 function repeatString(value, count) {
-    var result = '';
-    for (var i = 0; i < count; i++)
-        result += value;
-    return result;
+    return value.repeat(count);
 }
 
 /**
@@ -205,9 +202,9 @@ function extractEmails(str) {
  *
  */
 function getRectangleString(width, height) {
-    var line = repeatString('─', width - 2);
+    var line = '─'.repeat(width - 2);
     var result  = '┌' + line + '┐\n';
-    result += repeatString('│' + repeatString(' ', width - 2) + '│\n', height - 2);
+    result += ('│' + ' '.repeat(width - 2) + '│\n').repeat(height - 2);
     return result + '└' + line + '┘\n';
 }
 
@@ -284,7 +281,7 @@ function getCardId(value) {
     var ranks = 'A234567891JQK';
     var suits = '♣♦♥♠';
     value = value.replace('0', '');
-    return ranks.indexOf(value.charAt(0)) + suits.indexOf(value.charAt(1)) * 13;
+    return ranks.indexOf(value[0]) + suits.indexOf(value[1]) * 13;
 }
 
 
