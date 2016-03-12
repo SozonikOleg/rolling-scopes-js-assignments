@@ -202,8 +202,8 @@ function extractEmails(str) {
  *
  */
 function getRectangleString(width, height) {
-    var line = '─'.repeat(width - 2);
-    var result  = '┌' + line + '┐\n';
+    var line = '─'.repeat(width - 2),
+        result  = '┌' + line + '┐\n';
     result += ('│' + ' '.repeat(width - 2) + '│\n').repeat(height - 2);
     return result + '└' + line + '┘\n';
 }
@@ -225,8 +225,8 @@ function getRectangleString(width, height) {
  *
  */
 function encodeToRot13(str) {
-    var zl = 'z'.charCodeAt(0);
-    var zu = 'Z'.charCodeAt(0);
+    var zl = 'z'.charCodeAt(0),
+        zu = 'Z'.charCodeAt(0);
     return str.replace(/[a-zA-Z]/g, function(c) {
         var c0 = c.charCodeAt(0);
         return String.fromCharCode(
@@ -278,8 +278,8 @@ function isString(value) {
  *   'K♠' => 51
  */
 function getCardId(value) {
-    var ranks = 'A234567891JQK';
-    var suits = '♣♦♥♠';
+    var ranks = 'A234567891JQK',
+        suits = '♣♦♥♠';
     value = value.replace('0', '');
     return ranks.indexOf(value[0]) + suits.indexOf(value[1]) * 13;
 }
