@@ -54,7 +54,9 @@ function getCicleCircumference(radius) {
  *  -3, 3  => 0
  */
 function getAverage(value1, value2) {
-    return (value1 > value2 ? value2 : value1) + (value1 - value2) / 2 * (value1 > value2 ? 1 : -1);
+    var min = Math.min(value1, value2),
+        max = Math.max(value1, value2);
+    return min + (max - min) / 2;
 }
 
 /**
@@ -127,7 +129,7 @@ function getAngleBetweenVectors(x1, y1, x2, y2) {
  *     0     => 0
  */
 function getLastDigit(value) {
-    return String(value).slice(-1);
+    return value % 10;
 }
 
 
