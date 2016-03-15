@@ -560,20 +560,19 @@ function distinct(arr) {
  *   }
  */
 function group(array, keySelector, valueSelector) {
-    var result = [];
-    array.map(function(v) {
-        var key = keySelector(v),
-            value = valueSelector(v);
-        var index = result.findIndex(function(v) {
-            return v[0] === key;
+    return new Map(array.reduce(function(previousValue, currentValue) {
+        var key = keySelector(currentValue),
+            value = valueSelector(currentValue);
+        var index = previousValue.findIndex(function(currentValuev) {
+            return currentValue[0] === key;
         });
         if (index < 0) {
-            index = result.length;
-            result[index] = [key, [value]];
+            index = previousValue.length;
+            previousValue[index] = [key, [value]];
         } else
-            result[index][1][result[index][1].length] = value;
-    });
-    return new Map(result);
+            previousValue[index][1][previousValue[index][1].length] = value;
+        return previousValue;
+    }, []));
 }
 
 
