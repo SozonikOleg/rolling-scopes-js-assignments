@@ -563,7 +563,7 @@ function group(array, keySelector, valueSelector) {
     return new Map(array.reduce(function(previousValue, currentValue) {
         var key = keySelector(currentValue),
             value = valueSelector(currentValue);
-        var index = previousValue.findIndex(function(currentValuev) {
+        var index = previousValue.findIndex(function(currentValue) {
             return currentValue[0] === key;
         });
         if (index < 0) {
