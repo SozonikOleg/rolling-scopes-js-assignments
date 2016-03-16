@@ -566,10 +566,9 @@ function group(array, keySelector, valueSelector) {
         var index = previousValue.findIndex(function(currentValue) {
             return currentValue[0] === key;
         });
-        if (index < 0) {
-            index = previousValue.length;
-            previousValue[index] = [key, [value]];
-        } else
+        if (index < 0)
+            previousValue[previousValue.length] = [key, [value]];
+        else
             previousValue[index][1][previousValue[index][1].length] = value;
         return previousValue;
     }, []));
