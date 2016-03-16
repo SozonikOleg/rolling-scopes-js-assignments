@@ -410,7 +410,7 @@ function timespanToHumanString(startDate, endDate) {
     if (diff <= 345 * 24 * 60 * 60 * 1000)
         return `${Math.round(diff / 30 / 24 / 60 / 60 / 1000)} months ago`;
     if (diff <= 545 * 24 * 60 * 60 * 1000)
-        return 'an year ago';
+        return 'a year ago';
     return `${Math.round(diff / 365 / 24 / 60 / 60 / 1000)} years ago`;
 }
 
