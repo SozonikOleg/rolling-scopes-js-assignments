@@ -30,13 +30,13 @@
  *
  */
 function getFizzBuzz(num) {
-    if (!(num % 3) && !(num % 5))
-        return 'FizzBuzz';
-    if (!(num % 3))
-        return 'Fizz';
-    if (!(num % 5))
+    if (num % 3 && num % 5)
+        return num;
+    if (num % 3)
         return 'Buzz';
-    return num;
+    if (num % 5)
+        return 'Fizz';
+    return 'FizzBuzz';
 }
 
 
@@ -72,10 +72,13 @@ function getFactorial(n) {
  *   -1,1  =>  0  ( = -1 + 0 + 1 )
  */
 function getSumBetweenNumbers(n1, n2) {
+    /*
     var result = 0;
     while (n2 >= n1)
         result += n2--;
     return result;
+    */
+    return (n1 + n2) / 2 * (n2 - n1 + 1);
 }
 
 
@@ -94,14 +97,9 @@ function getSumBetweenNumbers(n1, n2) {
  *   10,10,10 =>  true
  */
 function isTriangle(a, b, c) {
-    switch (Math.max(a, b, c)) {
-        case a:
-            return a < b + c;
-        case b:
-            return b < a + c;
-        case c:
-            return c < a + b;
-    }
+    return (a < b + c) &&
+        (b < a + c) &&
+        (c < a + b);
 }
 
 
@@ -137,18 +135,13 @@ function isTriangle(a, b, c) {
  *   { top:20, left:20, width: 20, height: 20 }    =>  false
  *  
  */
-function pointInRect(rect, x, y) {
-    return rect.left <= x && rect.left + rect.width >= x && rect.top <= y && rect.top + rect.height >= y;
-}
 function doRectanglesOverlap(rect1, rect2) {
-    return pointInRect(rect1, rect2.left, rect2.top) ||
-        pointInRect(rect1, rect2.left + rect2.width, rect2.top) ||
-        pointInRect(rect1, rect2.left + rect2.width, rect2.top + rect2.height) ||
-        pointInRect(rect1, rect2.left, rect2.top + rect2.height) ||
-        pointInRect(rect2, rect1.left, rect1.top) ||
-        pointInRect(rect2, rect1.left + rect1.width, rect1.top) ||
-        pointInRect(rect2, rect1.left + rect1.width, rect1.top + rect2.height) ||
-        pointInRect(rect2, rect1.left, rect1.top + rect1.height);
+    return !(
+        rect1.top > rect2.top + rect2.height ||
+        rect1.left > rect2.left + rect2.width ||
+        rect1.top + rect1.height < rect2.top ||
+        rect1.left + rect1.width < rect2.left
+    );
 }
 
 
@@ -196,7 +189,7 @@ function isInsideCircle(circle, point) {
  */
 function findFirstSingleChar(str) {
     for (var i = 0; i < str.length; i++)
-        if (str.match(new RegExp(str[i], 'g')).length === 1)
+        if (str.indexOf(str[i]) === i && str.lastIndexOf(str[i]) === i)
             return str[i];
     return null;
 }
@@ -224,7 +217,11 @@ function findFirstSingleChar(str) {
  *
  */
 function getIntervalString(a, b, isStartIncluded, isEndIncluded) {
-    return (isStartIncluded ? '[' : '(') + Math.min(a, b) + ', ' + Math.max(a, b) + (isEndIncluded ? ']' : ')');
+    return (isStartIncluded ? '[' : '(') +
+        Math.min(a, b) +
+        ', ' +
+        Math.max(a, b) +
+        (isEndIncluded ? ']' : ')');
 }
 
 
@@ -261,7 +258,12 @@ function reverseString(str) {
  *   34143 => 34143
  */
 function reverseInteger(num) {
-    return parseInt(num.toString().split('').reverse().join('')); // or solution from previous task
+    let result = 0;
+    while (num > 0) {
+        result = result * 10 + num % 10;
+        num = Math.floor(num / 10);
+    }
+    return result;
 }
 
 
@@ -312,14 +314,15 @@ function isCreditCardNumber(ccn) {
  *   165536 (1+6+5+5+3+6 = 26,  2+6 = 8) => 8
  */
 function getDigitalRoot(num) {
-    var result = num;
-    do {
-        num = result.toString();
-        result = 0;
-        for (var i = 0; i < num.length; i++)
-            result += num[i] * 1;
-    } while (result > 9);
-    return result;
+    while (num > 9) {
+        let i = num;
+        num = 0;
+        while (i > 0) {
+            num += i % 10
+            i = Math.floor(i / 10);
+        }
+    }
+    return num;
 }
 
 
@@ -390,28 +393,32 @@ function isBracketsBalanced(str) {
  *
  */
 function timespanToHumanString(startDate, endDate) {
-    var diff = endDate.getTime() - startDate.getTime();
-    if (diff <= 45 * 1000)
+    let diff = endDate.getTime() - startDate.getTime(),
+        s = 1000, // second
+        m = s * 60, // minute
+        h = m * 60, // hour
+        d = h * 24; // day
+    if (diff <= 45 * s)
         return 'a few seconds ago';
-    if (diff <= 90 * 1000)
+    if (diff <= 90 * s)
         return 'a minute ago';
-    if (diff <= 45 * 60 * 1000)
-        return `${Math.round((diff - 1) / 60 / 1000)} minutes ago`;
-    if (diff <= 90 * 60 * 1000)
+    if (diff <= 45 * m)
+        return `${Math.round((diff - 1) / m)} minutes ago`;
+    if (diff <= 90 * m)
         return 'an hour ago';
-    if (diff <= 22 * 60 * 60 * 1000)
-        return `${Math.round((diff - 1) / 60 / 60 / 1000)} hours ago`;
-    if (diff <= 36 * 60 * 60 * 1000)
+    if (diff <= 22 * h)
+        return `${Math.round((diff - 1) / h)} hours ago`;
+    if (diff <= 36 * h)
         return 'a day ago';
-    if (diff <= 25 * 24 * 60 * 60 * 1000)
-        return `${Math.round((diff - 1) / 24 / 60 / 60 / 1000)} days ago`;
-    if (diff <= 45 * 24 * 60 * 60 * 1000)
+    if (diff <= 25 * d)
+        return `${Math.round((diff - 1) / d)} days ago`;
+    if (diff <= 45 * d)
         return 'a month ago';
-    if (diff <= 345 * 24 * 60 * 60 * 1000)
-        return `${Math.round(diff / 30 / 24 / 60 / 60 / 1000)} months ago`;
-    if (diff <= 545 * 24 * 60 * 60 * 1000)
+    if (diff <= 345 * d)
+        return `${Math.round(diff / 30 / d)} months ago`;
+    if (diff <= 545 * d)
         return 'a year ago';
-    return `${Math.round(diff / 365 / 24 / 60 / 60 / 1000)} years ago`;
+    return `${Math.round(diff / 365 / d)} years ago`;
 }
 
 
@@ -538,20 +545,26 @@ function getMatrixProduct(m1, m2) {
  *
  */
 function evaluateTicTacToePosition(position) {
-    var d1 = position[0][0] !== undefined,
-        d2 = position[0][2] !== undefined;
-    for (var i = 0; i < 3; i++) {
-        if (position[i][0] === position[i][1] && position[i][0] === position[i][2] && position[i][0] !== undefined)
-            return position[i][0];
-        if (position[0][i] === position[1][i] && position[0][i] === position[2][i] && position[0][i] !== undefined)
-            return position[0][i];
-        d1 = d1 && position[0][0] === position[i][i];
-        d2 = d2 && position[0][2] === position[i][2 - i];
+    let win = [
+        [[0, 0], [0, 1], [0, 2]],
+        [[1, 0], [1, 1], [1, 2]],
+        [[2, 0], [2, 1], [2, 2]],
+        [[0, 0], [1, 0], [2, 0]],
+        [[0, 1], [1, 1], [2, 1]],
+        [[0, 2], [1, 2], [2, 2]],
+        [[0, 0], [1, 1], [2, 2]],
+        [[2, 0], [1, 1], [0, 2]]
+    ];
+    for (let row of win) {
+        let b = true,
+            v = position[row[0][0]][row[0][1]];
+        if (v !== undefined) {
+            for (let i = 1; i < row.length; i++)
+                b = b && v === position[row[i][0]][row[i][1]];
+            if (b)
+                return v;
+        }
     }
-    if (d1)
-        return position[0][0];
-    if (d2)
-        return position[0][2];
 }
 
 
