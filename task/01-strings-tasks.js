@@ -69,7 +69,7 @@ function getStringFromTemplate(firstName, lastName) {
  *   'Hello, Chuck Norris!' => 'Chuck Norris'
  */
 function extractNameFromTemplate(value) {
-    return value.split(' ').slice(1, 3).join(' ').slice(0, -1);
+    return value.slice(value.indexOf(' ') + 1, -1);
 }
 
 
@@ -145,7 +145,7 @@ function removeFirstOccurrences(str, value) {
  *   '<a>' => 'a'
  */
 function unbracketTag(str) {
-    return str.replace(/[<>]/g, '');
+    return str.slice(1, -1);
 }
 
 
@@ -279,8 +279,7 @@ function isString(value) {
 function getCardId(value) {
     var ranks = 'A234567891JQK',
         suits = '♣♦♥♠';
-    value = value.replace('0', '');
-    return ranks.indexOf(value[0]) + suits.indexOf(value[1]) * 13;
+    return ranks.indexOf(value[0]) + suits.indexOf(value.slice(-1)) * 13;
 }
 
 
