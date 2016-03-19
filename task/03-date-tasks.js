@@ -57,13 +57,7 @@ function parseDataFromIso8601(value) {
  */
 function isLeapYear(date) {
     var year = date.getFullYear();
-    if (year % 4)
-        return false;
-    if (year % 100)
-        return true;
-    if (year % 400)
-        return false;
-   return true;
+    return year % 4 === 0 && (year % 400 === 0 || year % 100 !== 0);
 }
 
 
@@ -87,8 +81,7 @@ function n0(value, count) {
     return '0'.repeat(count - value.length) + value;
 }
 function timeSpanToString(startDate, endDate) {
-    var d = new Date(endDate.getTime() - startDate.getTime() + (new Date()).getTimezoneOffset() * 60 * 1000);
-    return `${n0(d.getHours(), 2)}:${n0(d.getMinutes(), 2)}:${n0(d.getSeconds(), 2)}.${n0(d.getMilliseconds(), 3)}`;
+    return new Date(endDate - startDate).toISOString().slice(11, -1);
 }
 
 
