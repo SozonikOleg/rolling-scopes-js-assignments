@@ -147,12 +147,9 @@ function retry(func, attempts) {
  */
 function logger(func, logFunc) {
     return function() {
-        const args = [];
-        for (let i in arguments)
-            args.push(arguments[i]);
-        const str = `${func.name}(${JSON.stringify(args).slice(1, -1)}) `;
+        const str = `${func.name}(${JSON.stringify(Array.from(arguments)).slice(1, -1)}) `;
         logFunc(str + 'starts');
-        let result = func.apply(null, arguments);
+        const result = func.apply(null, arguments);
         logFunc(str + 'ends');
         return result;
     };
@@ -173,15 +170,9 @@ function logger(func, logFunc) {
  *   partialUsingArguments(fn, 'a','b','c','d')() => 'abcd'
  */
 function partialUsingArguments(fn) {
-    var args = arguments;
+    const args = Array.from(arguments).slice(1);
     return function() {
-        const summArgs = [];
-        for (let value of args)
-            summArgs.push(value);
-        for (let value of arguments)
-            summArgs.push(value);
-        summArgs.shift();
-        return fn.apply(null, summArgs);
+        return fn.apply(null, args.concat(Array.from(arguments)));
     };
 }
 
