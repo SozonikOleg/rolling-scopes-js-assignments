@@ -226,7 +226,7 @@ function getRectangleString(width, height) {
 function encodeToRot13(str) {
     var zl = 'z'.charCodeAt(0),
         zu = 'Z'.charCodeAt(0);
-    return str.replace(/[a-zA-Z]/g, function(c) {
+    return str.replace(/[a-zA-Z]/g, (c) => {
         var c0 = c.charCodeAt(0);
         return String.fromCharCode(
             c0 + 13 <= (c > c.toUpperCase() ? zl : zu) ? c0 + 13 : c0 - 13
