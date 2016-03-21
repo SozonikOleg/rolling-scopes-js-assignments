@@ -104,7 +104,94 @@ function createCompassPoints() {
  *   'nothing to do' => 'nothing to do'
  */
 function* expandBraces(str) {
-    throw new Error('Not implemented');
+    
+    function getArray(str, addEmpty) {
+        let values = [],
+            value = '',
+            skip = 0;
+        for (let i = 0; i < str.length; i++) {
+            if (str[i] === '}') {
+                skip--;
+                if (!skip) {
+                    values.push(new getVariants(value));
+                    value = '';
+                } else
+                    value += str[i];
+            } else if (str[i] === '{') {
+                if (!skip) {
+                    if (value)
+                        values.push(value);
+                    value = '';
+                } else
+                    value += str[i];
+                skip++;
+            } else
+                value += str[i];
+        }
+        if (value || addEmpty)
+            values.push(value);
+        
+        this.current = function() {
+            let result = '';
+            for (let v of values)
+                    if (typeof v === 'string')
+                    result += v;
+                else
+                    result += v.current();
+            return result;
+        };
+        
+        this.next = function() {
+            for (let v of values)
+                if (typeof v !== 'string')
+                    if (v.next())
+                        return true;
+            return false;
+        };
+    }
+    
+    function getVariants(str) {
+        let values = [],
+            value = '',
+            skip = 0,
+            position = 0;
+        
+        for (let i = 0; i < str.length; i++) {
+            if (str[i] === ',' && !skip) {
+                values.push(new getArray(value, true));
+                value = '';
+            } else {
+                value += str[i];
+                if (str[i] === '{')
+                    skip++;
+                if (str[i] === '}')
+                    skip--;
+            }
+        }
+        values.push(new getArray(value, true));
+        
+        this.current = function() {
+            return values[position].current();
+        };
+        
+        this.next = function() {
+            if (values[position].next())
+                return true;
+            position++;
+            if (position < values.length)
+                return true;
+            else
+                position = 0;
+            return false;
+        };
+    }
+    
+    let arr = new getArray(str, false);
+    
+    do {
+        yield arr.current();
+    }
+    while (arr.next());
 }
 
 
