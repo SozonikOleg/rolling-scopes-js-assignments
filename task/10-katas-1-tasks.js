@@ -223,7 +223,33 @@ function* expandBraces(str) {
  *
  */
 function getZigZagMatrix(n) {
-    throw new Error('Not implemented');
+    let row = 0,
+        col = 0,
+        direction = 0,
+        arr = Array.from({length: n}, () => Array.from({length: n}));
+    for (let i = 0; i < n * n; i++) {
+        arr[row][col] = i;
+        
+        if (direction % 2) {
+            row += direction % 4 === 1 ? 1 : -1;
+            col += direction % 4 === 1 ? -1 : 1;
+        } else if (
+            (direction % 4 === 0 && col < n - 1) ||
+            row === n - 1
+        )
+                col++;
+            else
+                row++;
+        if (
+            direction % 2 === 0 ||
+            row === 0 ||
+            row === n - 1 ||
+            col === 0 ||
+            col === n - 1
+        )
+            direction++;
+    }
+    return arr;
 }
 
 
