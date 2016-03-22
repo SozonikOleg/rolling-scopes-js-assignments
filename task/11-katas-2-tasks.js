@@ -137,7 +137,79 @@ const PokerRank = {
 }
 
 function getPokerHandRank(hand) {
-    throw new Error('Not implemented');
+    
+    function get(hand) {
+        
+        const _ranks = 'A234567891JQKA',
+              suits = [],
+              ranks = {
+                  count: [],
+                  values: [],
+                  sorted: []
+              };
+        
+        for (let v of hand) {
+            
+            if (ranks.values.indexOf(v[0]) < 0) {
+                ranks.values.push(v[0]);
+                ranks.count.push(1);
+            } else
+                ranks.count[ranks.values.indexOf(v[0])]++;
+            
+            if (suits.indexOf(v.slice(-1)) < 0)
+                suits.push(v.slice(-1));
+        }
+        ranks.sorted = ranks.values.sort((a, b) => _ranks.indexOf(a) - _ranks.indexOf(b));
+        if (ranks.sorted[0] === 'A' && ranks.sorted[1] !== '2') {
+            ranks.sorted.splice(0, 1);
+            ranks.sorted.push('A');
+        }
+        
+        this.getCount = function (cnt) {
+            let res = 0;
+            for (let v of ranks.count)
+                if (v === cnt)
+                    res++;
+            return res;
+        }
+        
+        this.isFlush = function() {
+            return suits.length === 1;
+        };
+        
+        this.isStraight = function() {
+            if (ranks.sorted.length < 5)
+                return false;
+            for (let i = 1; i < 5; i++)
+                if (
+                    _ranks.indexOf(ranks.sorted[i - 1]) + 1 !== _ranks.indexOf(ranks.sorted[i]) &&
+                    _ranks.indexOf(ranks.sorted[i - 1]) + 1 !== _ranks.lastIndexOf(ranks.sorted[i])
+                )
+                    return false;
+            return true;
+        };
+    }
+    
+    hand = new get(hand);
+    
+    if (hand.isFlush() && hand.isStraight())
+        return PokerRank.StraightFlush;
+    else if (hand.getCount(4))
+        return PokerRank.FourOfKind;
+    else if (hand.getCount(3) && hand.getCount(2))
+        return PokerRank.FullHouse;
+    else if (hand.isFlush())
+        return PokerRank.Flush;
+    else if (hand.isStraight())
+        return PokerRank.Straight;
+    else if (hand.getCount(3))
+        return PokerRank.ThreeOfKind;
+    else if (hand.getCount(2) == 2)
+        return PokerRank.TwoPairs;
+    else if (hand.getCount(2))
+        return PokerRank.OnePair;
+    else
+        return PokerRank.HighCard;
 }
 
 
