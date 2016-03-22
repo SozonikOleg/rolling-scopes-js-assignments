@@ -34,7 +34,36 @@
  *
  */
 function parseBankAccount(bankAccount) {
-    throw new Error('Not implemented');
+    let result = 0,
+        ba = bankAccount.split('\n');
+    for (let i = 0; i < 9 * 3; i += 3) {
+        let num;
+        if (ba[0][i + 1] === ' ')
+            if (ba[1][i + 1] === '_')
+                num = 4;
+            else
+                num = 1;
+        else if (ba[2][i + 2] === ' ')
+            num = 2;
+        else if (ba[1][i] === ' ')
+            if (ba[1][i + 1] === '_')
+                num = 3;
+            else
+                num = 7;
+        else if (ba[1][i + 2] === ' ')
+            if (ba[2][i] === ' ')
+                num = 5;
+            else
+                num = 6;
+        else if (ba[2][i] === ' ')
+            num = 9;
+        else if (ba[1][i + 1] === ' ')
+            num = 0;
+        else
+            num = 8;
+        result = result * 10 + num;
+    }
+    return result;
 }
 
 
