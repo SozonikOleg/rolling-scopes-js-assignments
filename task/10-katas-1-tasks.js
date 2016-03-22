@@ -105,6 +105,7 @@ function createCompassPoints() {
  */
 function* expandBraces(str) {
     
+    // объект, в котором элементы нужно суммировать
     function getArray(str, addEmpty) {
         let values = [],
             value = '',
@@ -150,6 +151,7 @@ function* expandBraces(str) {
         };
     }
     
+    // объект, в котором элементы нужно перебирать
     function getVariants(str) {
         let values = [],
             value = '',
@@ -233,20 +235,11 @@ function getZigZagMatrix(n) {
         if (direction % 2) {
             row += direction % 4 === 1 ? 1 : -1;
             col += direction % 4 === 1 ? -1 : 1;
-        } else if (
-            (direction % 4 === 0 && col < n - 1) ||
-            row === n - 1
-        )
+        } else if ((direction % 4 === 0 && col < n - 1) || row === n - 1)
                 col++;
             else
                 row++;
-        if (
-            direction % 2 === 0 ||
-            row === 0 ||
-            row === n - 1 ||
-            col === 0 ||
-            col === n - 1
-        )
+        if (direction % 2 === 0 || row === 0 || row === n - 1 || col === 0 || col === n - 1)
             direction++;
     }
     return arr;
@@ -357,7 +350,23 @@ function canDominoesMakeRow(dominoes) {
  * [ 1, 2, 4, 5]          => '1,2,4,5'
  */
 function extractRanges(nums) {
-    throw new Error('Not implemented');
+    let arr = [[nums[0]]];
+    
+    // группируем блоки
+    for (let i = 1; i < nums.length; i++)
+        if (nums[i] - 1 === arr[arr.length - 1][arr[arr.length - 1].length - 1])
+            arr[arr.length - 1].push(nums[i]);
+        else
+            arr.push([nums[i]]);
+    
+    // переводим блоки в строки
+    for (let i in arr)
+        if (arr[i].length > 2)
+            arr[i] = arr[i][0] + '-' + arr[i][arr[i].length - 1];
+        else
+            arr[i] = arr[i].join(',');
+    
+    return arr.join(',');
 }
 
 module.exports = {
