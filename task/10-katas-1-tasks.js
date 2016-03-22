@@ -274,7 +274,66 @@ function getZigZagMatrix(n) {
  *
  */
 function canDominoesMakeRow(dominoes) {
-    throw new Error('Not implemented');
+    
+    // убираем все дубли и подсчитываем кол-во вхождений каждой из цифр
+    let res = false,
+        cnt = Array.from({length: 7}, () => 0);
+    dominoes = dominoes.filter((v, i) => {
+        if (v[0] !== v[1]) {
+            cnt[v[0]]++;
+            cnt[v[1]]++;
+            return true;
+        } else {
+            if (!dominoes.some((v1, i1) => i !== i1 && (v[0] === v1[0] || v[0] === v1[1])))
+                res = true;
+            return false;
+        }
+    });
+    
+    // если некуда пристроить дубль
+    if (res)
+        return false;
+    
+    if (dominoes.length === 1)
+        return true;
+    
+    // если нечётных количеств цифр больше 2, то домино сложить нельзя
+    res = 0;
+    for (let i = 0; i < 7; i++)
+        if (cnt[i] % 2)
+            res++;
+    if (res > 2)
+        return false;
+    
+    // комбинируем 2 кости и получаем все возможные варианты
+    function* combine(domino1, domino2) {
+        for (let i = 0; i < 2; i++)
+            for (let j = 0; j < 2; j++)
+                if (domino1[i] === domino2[j])
+                    yield [domino1[1 - i], domino2[1 - j]];
+    }
+    
+    const exclude = Array.from({length: dominoes.length}, (v, i) => i);
+    let excludeCount = 1;
+    
+    // складываем кости всеми возможными путями
+    function rec(domino) {
+        if (excludeCount === dominoes.length)
+            return true;
+        for (let i = 1; i < dominoes.length; i++)
+            if (exclude[i]) {
+                exclude[i] = false;
+                excludeCount++;
+                for (let v of combine(domino, dominoes[i]))
+                    if (rec(v))
+                        return true;
+                exclude[i] = true;
+                excludeCount--;
+            }
+        if (excludeCount === 1)
+            return false;
+    }
+    return rec(dominoes[0]);
 }
 
 
