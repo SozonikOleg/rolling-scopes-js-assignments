@@ -109,6 +109,12 @@ function fromJSON(proto, json) {
  *
  *  For more examples see unit tests.
  */
+    
+const CSS_SELECTOR_ERRORS = [
+    'Element, id and pseudo-element should not occur more then one time inside the selector',
+    'Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element'
+];
+
 function cssSelector(fromCombine) {
     
     fromCombine = fromCombine || '';
@@ -127,14 +133,14 @@ function cssSelector(fromCombine) {
         for (let i in values)
             if (values.hasOwnProperty(i))
                 if (b && values[i])
-                    throw new Error('Wrong order!');
+                    throw new Error(CSS_SELECTOR_ERRORS[1]);
                 else if (!b && i === currentPart)
                     b = true;
     } 
     
     this.element = function(value) {
         if (values.element)
-            throw new Error('Element has already setted!');
+            throw new Error(CSS_SELECTOR_ERRORS[0]);
         checkOrder('element');
         values.element = value;
         return this;
@@ -142,7 +148,7 @@ function cssSelector(fromCombine) {
     
     this.id = function(value) {
         if (values.id)
-            throw new Error('ID has already setted!');
+            throw new Error(CSS_SELECTOR_ERRORS[0]);
         checkOrder('id');
         values.id = '#' + value;
         return this;
@@ -168,7 +174,7 @@ function cssSelector(fromCombine) {
     
     this.pseudoElement = function(value) {
         if (values.pseudoElement)
-            throw new Error('Pseudo element has already setted!');
+            throw new Error(CSS_SELECTOR_ERRORS[0]);
         checkOrder('pseudoElement');
         values.pseudoElement = '::' + value;
         return this;
