@@ -175,6 +175,13 @@ function partialUsingArguments(fn) {
         return fn.apply(null, args.concat(Array.from(arguments)));
     };
 }
+/*
+function partialUsingArguments(fn, ...a) {
+    return function(...b) {
+        return fn.apply(null, a.concat(b));
+    };
+}
+*/
 
 
 /**
