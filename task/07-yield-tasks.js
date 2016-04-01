@@ -173,7 +173,7 @@ function* mergeSortedSequences(source1, source2) {
         val1 = src1.next().value,
         val2 = src2.next().value;
     while (true)
-        if (val1 < val2 && val1 !== undefined) {
+        if ((val1 < val2 || val2 === undefined) && val1 !== undefined) {
             yield val1;
             val1 = src1.next().value;
         } else if (val2 !== undefined) {
