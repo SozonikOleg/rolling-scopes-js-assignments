@@ -309,8 +309,6 @@ function* getFigureRectangles(figure) {
                 if (obj)
                     yield getFigure(obj);
             }
-    
-    //throw new Error('Not implemented');
 }
 
 

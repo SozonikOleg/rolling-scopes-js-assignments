@@ -28,7 +28,27 @@
  *   'NULL'      => false 
  */
 function findStringInSnakingPuzzle(puzzle, searchStr) {
-    throw new Error('Not implemented');
+    
+    function rec(exclude) {
+        if (searchStr.length === exclude.length)
+            return true;
+        let pos = exclude[exclude.length - 1];
+        for (let val of [[0, 1], [1, 0], [0, -1], [-1, 0]])
+            if (
+                pos[0] + val[0] >= 0 && pos[0] + val[0] < puzzle.length &&
+                pos[1] + val[1] >= 0 && pos[1] + val[1] < puzzle[pos[0] + val[0]].length &&
+                !exclude.some(v => v[0] === pos[0] + val[0] && v[1] === pos[1] + val[1]) &&
+                puzzle[pos[0] + val[0]][pos[1] + val[1]] === searchStr[exclude.length]
+            )
+                if (rec(exclude.concat([[pos[0] + val[0], pos[1] + val[1]]])))
+                    return true;
+    }
+    
+    for (let i = 0; i < puzzle.length; i++)
+        for (let j = 0; j < puzzle[i].length; j++)
+            if (puzzle[i][j] === searchStr[0] && rec([[i, j]]))
+                return true;
+    return false;
 }
 
 
@@ -45,7 +65,17 @@ function findStringInSnakingPuzzle(puzzle, searchStr) {
  *    'abc' => 'abc','acb','bac','bca','cab','cba'
  */
 function* getPermutations(chars) {
-    throw new Error('Not implemented');
+    
+    function* rec(str) {
+        if (str.length === chars.length)
+            yield str;
+        else
+            for (let i = 0; i < chars.length; i++)
+                if (str.indexOf(chars[i]) < 0)
+                    yield *rec(str + chars[i]);
+    }
+    
+    yield *rec('');
 }
 
 
@@ -65,7 +95,18 @@ function* getPermutations(chars) {
  *    [ 1, 6, 5, 10, 8, 7 ] => 18  (buy at 1,6,5 and sell all at 10)
  */
 function getMostProfitFromStockQuotes(quotes) {
-    throw new Error('Not implemented');
+    let result = 0,
+        quotesSorted = quotes.slice(0).sort((a, b) => b - a);
+    while (quotes.length) {
+        while (quotes.indexOf(quotesSorted[0]) < 0)
+            quotesSorted.shift();
+        let inx = quotes.indexOf(quotesSorted[0]);
+        result += quotesSorted[0] * inx;
+        for (let i = 0; i < inx; i++)
+            result -= quotes[i];
+        quotes.splice(0, inx + 1);
+    }
+    return result;
 }
 
 
@@ -92,12 +133,122 @@ function UrlShortener() {
 UrlShortener.prototype = {
 
     encode: function(url) {
-        throw new Error('Not implemented');
+        
+        let initUrl = url;
+        
+        function intToBin(val, len) {
+            let buf = val.toString(2);
+            return '0'.repeat(len - buf.length) + buf;
+        }
+        
+        let dict = {},
+            elems = [],
+            phrase = '',
+            pos = this.urlAllowedChars.length,
+            result = '',
+            bin = '',
+            source = '';
+        
+        if (url.indexOf(this.https) === 0) {
+            bin += '1';
+            url = url.slice(this.https.length);
+        } else {
+            bin += '0';
+            if (url.indexOf(this.http) === 0)
+                url = url.slice(this.http.length);
+        }
+        if (url.indexOf(this.www) === 0) {
+            bin += '1';
+            url = url.slice(this.www.length);
+        } else
+            bin += '0';
+        
+        for (let i = 0; i < url.length; i++)
+            source += String.fromCharCode(this.urlAllowedChars.indexOf(url[i]));
+        
+        phrase = source[0];
+        for (let i = 1; i < source.length; i++)
+            if (dict[phrase + source[i]] !== undefined)
+                phrase += source[i];
+            else {
+                bin += intToBin(phrase.length > 1 ? dict[phrase] : phrase.charCodeAt(0), pos > 127 ? 8 : 7);
+                pos++;
+                dict[phrase + source[i]] = pos;
+                phrase = source[i];
+            }
+        bin += intToBin(phrase.length > 1 ? dict[phrase] : phrase.charCodeAt(0), pos > 127 ? 8 : 7);
+        
+        if (bin.length % this.bitPerSymbol)
+            bin += '0'.repeat(this.bitPerSymbol - bin.length % this.bitPerSymbol);
+        
+        for (let i = 0; i < Math.round(bin.length / this.bitPerSymbol); i++)
+            if (this.bitPerSymbol === 6)
+                result += this.base64str[Number('0b' + bin.substr(i * this.bitPerSymbol, this.bitPerSymbol))];
+            else
+                result += String.fromCharCode(Number('0b' + bin.substr(i * this.bitPerSymbol, this.bitPerSymbol)));
+        
+        //console.log(result.length, initUrl.length, initUrl.length / result.length);
+        //console.log(this.decode(result));
+        
+        return result;
+        //throw new Error('Not implemented');
     },
     
     decode: function(code) {
-        throw new Error('Not implemented');
-    } 
+        
+        let dict = {},
+            elems = '',
+            phrase = '',
+            oldPhrase = '',
+            currChar = '',
+            pos = this.urlAllowedChars.length,
+            result = '',
+            bin = '',
+            bits = 7;
+        
+        for (let i = 0; i < code.length; i++) {
+            let buf;
+            if (this.bitPerSymbol === 6)
+                buf = this.base64str.indexOf(code[i]).toString(2);
+            else
+                buf = code.charCodeAt(i).toString(2);
+            bin += '0'.repeat(this.bitPerSymbol - buf.length) + buf;
+        }
+        
+        bin = bin.split('');
+        if (bin.splice(0, 1)[0] === '1')
+            result += this.https;
+        else
+            result += this.http;
+        if (bin.splice(0, 1)[0] === '1')
+            result += this.www;
+        
+        while (bin.length >= bits) {
+            let currCode = Number('0b' + bin.splice(0, bits).join(''));
+            if (currCode < this.urlAllowedChars.length)
+                phrase = String.fromCharCode(currCode);
+            else
+                phrase = dict[currCode] ? dict[currCode] : (oldPhrase + currChar);
+            elems += phrase;
+            currChar = phrase.charAt(0);
+            dict[pos++] = oldPhrase + currChar;
+            if (pos === 128)
+                bits = 8;
+            oldPhrase = phrase;
+        }
+        
+        for (let i = 0; i < elems.length; i++)
+            result += this.urlAllowedChars[elems.charCodeAt(i)];
+        
+        return result;
+    },
+    
+    base64str: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_',
+    https: 'https://',
+    http: 'http://',
+    www: 'www.',
+    bitPerSymbol: 6
+    
 }
 
 
