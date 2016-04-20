@@ -133,6 +133,44 @@ function UrlShortener() {
 UrlShortener.prototype = {
 
     encode: function(url) {
+        let result = '',
+            char = 0;
+        for (let i = 0; i < url.length; i++) {
+            char = char << this.BYTES | (this.urlAllowedChars.indexOf(url[i]) + 1);
+            if (i % 2 || i === url.length - 1) {
+                result += String.fromCharCode(char);
+                char = 0;
+            }
+        }
+        return result;
+    },
+    
+    decode: function(code) {
+        const _AND = ~(~0 << this.BYTES);
+        let result = '';
+        for (let i = 0; i < code.length; i++) {
+            let char = code.charCodeAt(i);
+            let c = char >> this.BYTES & _AND;
+            if (c)
+                result += this.urlAllowedChars[c - 1];
+            c = char & _AND;
+            result += this.urlAllowedChars[c - 1];
+        }
+        return result;
+    },
+    
+    BYTES: 7
+    
+}
+/*function UrlShortener() {
+    this.urlAllowedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"+
+                           "abcdefghijklmnopqrstuvwxyz"+
+                           "0123456789-_.~!*'();:@&=+$,/?#[]";
+}
+
+UrlShortener.prototype = {
+
+    encode: function(url) {
         
         let initUrl = url;
         
@@ -249,7 +287,7 @@ UrlShortener.prototype = {
     www: 'www.',
     bitPerSymbol: 6
     
-}
+}*/
 
 
 module.exports = {

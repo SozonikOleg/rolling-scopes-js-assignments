@@ -104,96 +104,19 @@ function createCompassPoints() {
  *   'nothing to do' => 'nothing to do'
  */
 function* expandBraces(str) {
-    
-    // объект, в котором элементы нужно суммировать
-    function getArray(str, addEmpty) {
-        let values = [],
-            value = '',
-            skip = 0;
-        for (let i = 0; i < str.length; i++) {
-            if (str[i] === '}') {
-                skip--;
-                if (!skip) {
-                    values.push(new getVariants(value));
-                    value = '';
-                } else
-                    value += str[i];
-            } else if (str[i] === '{') {
-                if (!skip) {
-                    if (value)
-                        values.push(value);
-                    value = '';
-                } else
-                    value += str[i];
-                skip++;
-            } else
-                value += str[i];
+    const queue = [str],
+          exist = [];
+    while (queue.length > 0) {
+        str = queue.shift();
+        let match = str.match(/\{([^{}]+)\}/);
+        if (match) {
+            for (let value of match[1].split(','))
+                queue.push(str.replace(match[0], value));
+        } else if (exist.indexOf(str) < 0) {
+            exist.push(str);
+            yield str;
         }
-        if (value || addEmpty)
-            values.push(value);
-        
-        this.current = function() {
-            let result = '';
-            for (let v of values)
-                    if (typeof v === 'string')
-                    result += v;
-                else
-                    result += v.current();
-            return result;
-        };
-        
-        this.next = function() {
-            for (let v of values)
-                if (typeof v !== 'string')
-                    if (v.next())
-                        return true;
-            return false;
-        };
     }
-    
-    // объект, в котором элементы нужно перебирать
-    function getVariants(str) {
-        let values = [],
-            value = '',
-            skip = 0,
-            position = 0;
-        
-        for (let i = 0; i < str.length; i++) {
-            if (str[i] === ',' && !skip) {
-                values.push(new getArray(value, true));
-                value = '';
-            } else {
-                value += str[i];
-                if (str[i] === '{')
-                    skip++;
-                if (str[i] === '}')
-                    skip--;
-            }
-        }
-        values.push(new getArray(value, true));
-        
-        this.current = function() {
-            return values[position].current();
-        };
-        
-        this.next = function() {
-            if (values[position].next())
-                return true;
-            position++;
-            if (position < values.length)
-                return true;
-            else
-                position = 0;
-            return false;
-        };
-    }
-    
-    let arr = new getArray(str, false);
-    
-    do {
-        yield arr.current();
-    }
-    while (arr.next());
 }
 
 
@@ -236,9 +159,9 @@ function getZigZagMatrix(n) {
             row += direction % 4 === 1 ? 1 : -1;
             col += direction % 4 === 1 ? -1 : 1;
         } else if ((direction % 4 === 0 && col < n - 1) || row === n - 1)
-                col++;
-            else
-                row++;
+            col++;
+        else
+            row++;
         if (direction % 2 === 0 || row === 0 || row === n - 1 || col === 0 || col === n - 1)
             direction++;
     }
